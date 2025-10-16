@@ -13,19 +13,24 @@ public class Player : MonoBehaviour
     [Header("References")]
     [SerializeField] private Camera mainCamera;
 
+    [SerializeField]
+    private AudioSource pickupAudioSource;
+
     private CharacterController controller;
     private InputManager inputManager;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     [SerializeField]
-    private GameObject UIObject;
+    private GameObject AstronautHead;
     [SerializeField]
-    private GameObject InGameObject;
+    private GameObject AstronautBody;
 
     [SerializeField]
     private GameObject LeftHand;
     [SerializeField]
     private GameObject RightHand;
+    [SerializeField]
+    private AudioSource footstepAudioSource;
 
     private float leftHandYaw = 0f;
     private float rightHandYaw = 0f;
@@ -64,13 +69,13 @@ public class Player : MonoBehaviour
 
         if (move.magnitude > 0)
         {
-            UIObject.GetComponent<Animator>().SetBool("IsWalking", true);
-            InGameObject.GetComponent<Animator>().SetBool("IsWalking", true);
+            AstronautHead.GetComponent<Animator>().SetBool("IsWalking", true);
+            AstronautBody.GetComponent<Animator>().SetBool("IsWalking", true);
         }
         else
         {
-            UIObject.GetComponent<Animator>().SetBool("IsWalking", false);
-            InGameObject.GetComponent<Animator>().SetBool("IsWalking", false);
+            AstronautHead.GetComponent<Animator>().SetBool("IsWalking", false);
+            AstronautBody.GetComponent<Animator>().SetBool("IsWalking", false);
         }
 
         // Final movement direction relative to camera
@@ -90,6 +95,97 @@ public class Player : MonoBehaviour
         // --- Apply movement ---
         Vector3 finalMove = (moveDirection * playerSpeed + Vector3.up * playerVelocity.y);
         controller.Move(finalMove * Time.deltaTime);
+
+        if (inputManager.GetFire())
+        {
+            Debug.Log("Mine");
+            AstronautBody.GetComponent<Animator>().SetTrigger("Mine");
+        }
+        if(inputManager.GetInteract())
+        {
+            AstronautBody.GetComponent<Animator>().SetTrigger("PickUp");
+        }
+    }
+
+    public void OnMiningAnimationHit()
+    {
+        Camera cam = Camera.main;
+        if (cam == null)
+        {
+            Debug.LogWarning("No main camera found for mining raycast.");
+            return;
+        }
+
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        float maxDistance = 15f;
+        if (Physics.Raycast(ray, out hit, maxDistance))
+        {
+            // Check both the hit object and its parents for the Collectible component
+            Collectible collectible = hit.transform.GetComponent<Collectible>();
+            if (collectible == null)
+            {
+                collectible = hit.transform.GetComponentInParent<Collectible>();
+            }
+
+            if (collectible != null)
+            {
+                collectible.MineResource();
+            }
+            else
+            {
+                Debug.Log($"Raycast hit: {hit.transform.name}, but it's not part of a collectible resource.");
+            }
+        }
+        else
+        {
+            Debug.Log("Raycast did not hit anything.");
+        }
+    }
+
+    public void OnPickupAnimationHit()
+    {
+        Camera cam = Camera.main;
+        if (cam == null)
+        {
+            Debug.LogWarning("No main camera found for pickup raycast.");
+            return;
+        }
+
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        float maxDistance = 5f;
+        if (Physics.Raycast(ray, out hit, maxDistance))
+        {
+            // Check both the hit object and its parents for the Collectible component
+            PickableItem item = hit.transform.GetComponent<PickableItem>();
+            if (item == null)
+            {
+                item = hit.transform.GetComponentInParent<PickableItem>();
+            }
+
+            if (item != null)
+            {
+                pickupAudioSource.pitch = UnityEngine.Random.Range(0.6f, 0.8f);
+                pickupAudioSource.Play();
+                item.Pickup();
+            }
+            else
+            {
+                Debug.Log($"Raycast hit: {hit.transform.name}, but it's not part of a collectible resource.");
+            }
+        }
+        else
+        {
+            Debug.Log("Raycast did not hit anything.");
+        }
+    }
+    
+    public void OnFootstepAnimationHit()
+    {
+        if(controller.isGrounded == false) return;
+        footstepAudioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+        footstepAudioSource.Play();
     }
     private void LateUpdate()
     {
@@ -99,7 +195,6 @@ public class Player : MonoBehaviour
         if (pitch > 180f) pitch -= 360f;
         // Convert -180 to 180 range to -1 to 1 range
         cameraPitch = pitch / 180f;
-        Debug.Log("Camera Pitch (-1 to 1): " + cameraPitch);
 
         leftHandYaw = LeftHand.transform.localRotation.y - cameraPitch;
         rightHandYaw = RightHand.transform.localRotation.y + cameraPitch;
@@ -107,9 +202,6 @@ public class Player : MonoBehaviour
         leftHandPitch = LeftHand.transform.localRotation.x - cameraPitch * 0.5f + 0.1f;
         rightHandPitch = RightHand.transform.localRotation.x - cameraPitch * 0.5f + 0.1f;
 
-        Debug.Log("Camera Pitch: " + mainCamera.transform.eulerAngles.x);
-        Debug.Log("Left Hand Yaw: " + leftHandYaw);
-        Debug.Log("Right Hand Yaw: " + rightHandYaw);
         LeftHand.transform.localRotation = new Quaternion(leftHandPitch, leftHandYaw, LeftHand.transform.localRotation.z, LeftHand.transform.localRotation.w);
         RightHand.transform.localRotation = new Quaternion(rightHandPitch, rightHandYaw, RightHand.transform.localRotation.z, RightHand.transform.localRotation.w);
     }

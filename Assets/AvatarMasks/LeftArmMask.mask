@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LeftArmMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Armature
+    m_Weight: 0
+  - m_Path: Armature/IK Leg Pole L
+    m_Weight: 0
+  - m_Path: Armature/IK Leg Pole L/IK Leg Pole L_end
+    m_Weight: 0
+  - m_Path: Armature/IK Leg Pole R
+    m_Weight: 0
+  - m_Path: Armature/IK Leg Pole R/IK Leg Pole R_end
+    m_Weight: 0
+  - m_Path: Armature/IK Target L
+    m_Weight: 0
+  - m_Path: Armature/IK Target L/IK Target L_end
+    m_Weight: 0
+  - m_Path: Armature/IK Target R
+    m_Weight: 0
+  - m_Path: Armature/IK Target R/IK Target R_end
+    m_Weight: 0
+  - m_Path: Armature/Root
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Head
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Head/Head_end
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder L
+    m_Weight: 1
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder L/UpperArm L
+    m_Weight: 1
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder L/UpperArm L/LowerArm L
+    m_Weight: 1
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder L/UpperArm L/LowerArm L/Hand L
+    m_Weight: 1
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder L/UpperArm L/LowerArm L/Hand L/Hand
+      L_end
+    m_Weight: 1
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder R
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder R/UpperArm R
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder R/UpperArm R/LowerArm R
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder R/UpperArm R/LowerArm R/Hand R
+    m_Weight: 0
+  - m_Path: Armature/Root/Spine1/Spine2/Shoulder R/UpperArm R/LowerArm R/Hand R/Hand
+      R_end
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg L
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg L/Lower Leg L
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg L/Lower Leg L/Foot L
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg L/Lower Leg L/Foot L/Foot L_end
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg R
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg R/Lower Leg R
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg R/Lower Leg R/Foot R
+    m_Weight: 0
+  - m_Path: Armature/Root/Upper Leg R/Lower Leg R/Foot R/Foot R_end
+    m_Weight: 0
+  - m_Path: Backpack
+    m_Weight: 0
+  - m_Path: Cylinder.002
+    m_Weight: 0
+  - m_Path: Strap
+    m_Weight: 0
+  - m_Path: TankBack
+    m_Weight: 0
+  - m_Path: TankFront
+    m_Weight: 0

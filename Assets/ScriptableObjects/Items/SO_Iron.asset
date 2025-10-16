@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Item
   itemName: Iron
   image: {fileID: 21300000, guid: 481a55eb38b3147fb8b2a444b9f56070, type: 3}
+  prefab: {fileID: 7538311923077731706, guid: 2ee54d708896d475b93c2ff59f676e88, type: 3}
   isStackable: 1
   maxStack: 8
