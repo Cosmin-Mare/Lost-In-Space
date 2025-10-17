@@ -43,6 +43,11 @@ public class InputManager : MonoBehaviour
         return playerInputActions.Player.Fire.triggered;
     }
 
+    public bool GetPickup()
+    {
+        return playerInputActions.Player.Pickup.triggered;
+    }
+
     public bool GetInteract()
     {
         return playerInputActions.Player.Interact.triggered;

@@ -39,4 +39,16 @@ public class AnimatorToPlayerRelay : MonoBehaviour
             Debug.LogWarning("Player reference not set in AnimatorToPlayerRelay.");
         }
     }
+
+    public void OnInteractAnimationHit()
+    {
+        if (player != null)
+        {
+            player.OnInteractAnimationHit();
+        }
+        else
+        {
+            Debug.LogWarning("Player reference not set in AnimatorToPlayerRelay.");
+        }
+    }
 }

@@ -101,9 +101,13 @@ public class Player : MonoBehaviour
             Debug.Log("Mine");
             AstronautBody.GetComponent<Animator>().SetTrigger("Mine");
         }
-        if(inputManager.GetInteract())
+        if (inputManager.GetPickup())
         {
             AstronautBody.GetComponent<Animator>().SetTrigger("PickUp");
+        }
+        if(inputManager.GetInteract())
+        {
+            AstronautBody.GetComponent<Animator>().SetTrigger("Interact");
         }
     }
 
@@ -181,6 +185,40 @@ public class Player : MonoBehaviour
         }
     }
     
+    public void OnInteractAnimationHit()
+    {
+        Camera cam = Camera.main;
+        if (cam == null)
+        {
+            Debug.LogWarning("No main camera found for interact raycast.");
+            return;
+        }
+
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        float maxDistance = 5f;
+        if (Physics.Raycast(ray, out hit, maxDistance))
+        {
+            Interactable interactable = hit.transform.GetComponent<Interactable>();
+            if (interactable == null)
+            {
+                interactable = hit.transform.GetComponentInParent<Interactable>();
+            }
+
+            if (interactable != null)
+            {
+                interactable.Interact();
+            }
+            else
+            {
+                Debug.Log($"Raycast hit: {hit.transform.name}, but it's not interactable.");
+            }
+        }
+        else
+        {
+            Debug.Log("Raycast did not hit anything.");
+        }
+    }
     public void OnFootstepAnimationHit()
     {
         if(controller.isGrounded == false) return;
