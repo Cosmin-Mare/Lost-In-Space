@@ -54,6 +54,8 @@ public class Player : MonoBehaviour
     private float pitch = 0f;
     private float yaw = 0f;
 
+    private Vector3 smoothNormal;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -63,6 +65,7 @@ public class Player : MonoBehaviour
         //Camera
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        smoothNormal = (transform.position - planet.transform.position).normalized;
     }
 
     void Update()
@@ -78,16 +81,6 @@ public class Player : MonoBehaviour
         Vector3 move = new Vector3(input.x, 0, input.y);
         move = Vector3.ClampMagnitude(move, 1f);
 
-        // --- Convert to camera space movement ---
-        Vector3 cameraForward = mainCamera.transform.forward;
-        Vector3 cameraRight = mainCamera.transform.right;
-
-        // Remove vertical tilt from camera direction
-        cameraForward.y = 0;
-        cameraRight.y = 0;
-        cameraForward.Normalize();
-        cameraRight.Normalize();
-
         if (move.magnitude > 0)
         {
             AstronautHead.GetComponent<Animator>().SetBool("IsWalking", true);
@@ -101,29 +94,27 @@ public class Player : MonoBehaviour
 
         // --- 1. Radial direction from planet center ---
         Vector3 upDirection = (transform.position - planet.transform.position).normalized;
+        float radialVelocity;
+        Vector3 moveDirection;
 
-        // --- 2. Raycast to get the face normal under the player ---
-        Ray ray = new Ray(transform.position + upDirection * 0.5f, -upDirection);
-        float radialVelocity = 0f;
-        Vector3 moveDirection = Vector3.zero;
-        if (Physics.Raycast(ray, out RaycastHit hit, 2f))
+        // Smooth transition between old and new normals
+        float smoothFactor = 10f; // adjust between 5–15 depending on how much smoothing you want
+        smoothNormal = Vector3.Slerp(smoothNormal, upDirection, Time.deltaTime * smoothFactor);
+
+        // --- 3. Get input relative to player rotation ---
+        Vector3 moveInput = new Vector3(move.x, 0, move.z);
+        Vector3 inputRelative = transform.TransformDirection(moveInput);
+
+        // --- 4. Project that input onto the smoothed normal ---
+        moveDirection = Vector3.ProjectOnPlane(inputRelative, smoothNormal).normalized * playerSpeed;
+
+        // --- 5. Apply radial velocity (gravity + jump) ---
+        radialVelocity = Vector3.Dot(playerVelocity, smoothNormal);
+        if (inputManager.GetJump() && groundedPlayer)
         {
-            Vector3 faceNormal = hit.normal; // normal of the triangle hit
-
-            // --- 3. Get input relative to player rotation ---
-            Vector3 moveInput = new Vector3(move.x, 0, move.z); // raw input
-            Vector3 inputRelative = transform.TransformDirection(moveInput); // rotate input by player rotation
-
-            // --- 4. Project that input onto the surface plane ---
-            moveDirection = Vector3.ProjectOnPlane(inputRelative, faceNormal).normalized * playerSpeed;
-
-            // --- 5. Apply radial velocity (gravity + jump) ---
-            radialVelocity = Vector3.Dot(playerVelocity, faceNormal);
-            if (inputManager.GetJump() && groundedPlayer)
-            {
-                radialVelocity = Mathf.Sqrt(jumpHeight * 2f * -gravityValue); // jump along surface normal
-            }
+            radialVelocity = Mathf.Sqrt(jumpHeight * 2f * -gravityValue);
         }
+
         radialVelocity += gravityValue * Time.deltaTime; // gravity toward planet center
         Debug.Log(radialVelocity);
         
@@ -317,7 +308,7 @@ public class Player : MonoBehaviour
         Debug.Log(targetRotation.eulerAngles);
 
         // transform.rotation = Quaternion.Euler(transform.eulerAngles.x, yaw, transform.eulerAngles.z);
-        head.localPosition = new Vector3(0, 0, 0.001f);
+        head.localPosition = new Vector3(0, 0.76f, 0.09f);
         head.localRotation = Quaternion.Euler(pitch, headEuler.y, headEuler.z);
         
         // Convert quaternion to euler angles for consistent pitch reading

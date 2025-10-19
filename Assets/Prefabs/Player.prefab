@@ -24,13 +24,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2549947352527925373}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.010000003, z: 0.010000002}
+  m_LocalRotation: {x: -0.00000008940697, y: 0.010471629, z: -9.313226e-10, w: 0.99994516}
+  m_LocalPosition: {x: 0, y: 0.79021645, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4703203261966967312}
-  m_Father: {fileID: 3653539270113494412}
+  m_Father: {fileID: 5793718419235901210}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3233964642755149295
 GameObject:
@@ -536,7 +536,6 @@ MonoBehaviour:
   footstepAudioSource: {fileID: 6464224330990583707}
   head: {fileID: 3852958649896625383}
   mouseSensitivity: 1
-  usePlayerInputManager: 1
   invertY: 0
   maxPitch: 80
 --- !u!1001 &404795702276970969
@@ -772,8 +771,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 1001010010263966456, guid: 8cc0decd326dc4ae592c6d17410d924b, type: 3}
-      insertIndex: -1
+    - targetCorrespondingSourceObject: {fileID: 8012145508004616302, guid: 8cc0decd326dc4ae592c6d17410d924b, type: 3}
+      insertIndex: 0
       addedObject: {fileID: 3852958649896625383}
     - targetCorrespondingSourceObject: {fileID: 8977289901041300155, guid: 8cc0decd326dc4ae592c6d17410d924b, type: 3}
       insertIndex: 0
@@ -786,11 +785,6 @@ PrefabInstance:
 --- !u!1 &151608416118246049 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4417231726386535893, guid: 8cc0decd326dc4ae592c6d17410d924b, type: 3}
-  m_PrefabInstance: {fileID: 4564318881919457140}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &3653539270113494412 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1001010010263966456, guid: 8cc0decd326dc4ae592c6d17410d924b, type: 3}
   m_PrefabInstance: {fileID: 4564318881919457140}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &4882476280226670031 stripped
