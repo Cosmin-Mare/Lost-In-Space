@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8262391147693932373}
   - component: {fileID: 3193037322142049818}
   - component: {fileID: 5874019209462198891}
+  - component: {fileID: 4880283012564945123}
   m_Layer: 0
   m_Name: PickableItem
   m_TagString: Untagged
@@ -153,3 +154,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickableItem
   itemData: {fileID: 0}
+--- !u!114 &4880283012564945123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5815570419637698389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99bf20e60ca0e4fc3afd9c4ba4cf5335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GravityBody

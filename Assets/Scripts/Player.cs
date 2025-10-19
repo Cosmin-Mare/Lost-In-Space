@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float playerSpeed = 2.0f;
     [SerializeField] private float jumpHeight = 1.5f;
-    [SerializeField] private float gravityValue = -9.81f;
+    private float gravityValue = -9.81f;
 
     [Header("References")]
     [SerializeField] private Camera mainCamera;
@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     private GameObject RightHand;
     [SerializeField]
     private AudioSource footstepAudioSource;
+    private PlanetGravity planet;
 
     private float leftHandYaw = 0f;
     private float rightHandYaw = 0f;
@@ -38,10 +39,30 @@ public class Player : MonoBehaviour
     private float leftHandPitch = 0f;
     private float rightHandPitch = 0f;
     private float cameraPitch = 0f;
+
+    //Camera
+    [SerializeField]
+    private Transform head; // assign the player's head (empty) in the Inspector
+
+    [Header("Mouse Look")]
+    [SerializeField]
+    private float mouseSensitivity = 1f;
+    [SerializeField]
+    private bool invertY = false;
+    [SerializeField]
+    private float maxPitch = 80f;
+    private float pitch = 0f;
+    private float yaw = 0f;
+
     private void Start()
     {
         controller = GetComponent<CharacterController>();
         inputManager = InputManager.Instance;
+        planet = PlanetGravity.Instance;
+
+        //Camera
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -78,23 +99,41 @@ public class Player : MonoBehaviour
             AstronautBody.GetComponent<Animator>().SetBool("IsWalking", false);
         }
 
-        // Final movement direction relative to camera
-        Vector3 moveDirection = (cameraForward * move.z + cameraRight * move.x).normalized;
+        // --- 1. Radial direction from planet center ---
+        Vector3 upDirection = (transform.position - planet.transform.position).normalized;
 
-        transform.forward = cameraForward;
-
-        // --- Jump ---
-        if (inputManager.GetJump() && groundedPlayer)
+        // --- 2. Raycast to get the face normal under the player ---
+        Ray ray = new Ray(transform.position + upDirection * 0.5f, -upDirection);
+        float radialVelocity = 0f;
+        Vector3 moveDirection = Vector3.zero;
+        if (Physics.Raycast(ray, out RaycastHit hit, 2f))
         {
-            playerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+            Vector3 faceNormal = hit.normal; // normal of the triangle hit
+
+            // --- 3. Get input relative to player rotation ---
+            Vector3 moveInput = new Vector3(move.x, 0, move.z); // raw input
+            Vector3 inputRelative = transform.TransformDirection(moveInput); // rotate input by player rotation
+
+            // --- 4. Project that input onto the surface plane ---
+            moveDirection = Vector3.ProjectOnPlane(inputRelative, faceNormal).normalized * playerSpeed;
+
+            // --- 5. Apply radial velocity (gravity + jump) ---
+            radialVelocity = Vector3.Dot(playerVelocity, faceNormal);
+            if (inputManager.GetJump() && groundedPlayer)
+            {
+                radialVelocity = Mathf.Sqrt(jumpHeight * 2f * -gravityValue); // jump along surface normal
+            }
         }
+        radialVelocity += gravityValue * Time.deltaTime; // gravity toward planet center
+        Debug.Log(radialVelocity);
+        
+        playerVelocity = upDirection * radialVelocity;
 
-        // --- Apply gravity ---
-        playerVelocity.y += gravityValue * Time.deltaTime;
-
-        // --- Apply movement ---
-        Vector3 finalMove = (moveDirection * playerSpeed + Vector3.up * playerVelocity.y);
+        // --- 6. Combine and move ---
+        Vector3 finalMove = moveDirection + playerVelocity;
         controller.Move(finalMove * Time.deltaTime);
+
+
 
         if (inputManager.GetFire())
         {
@@ -105,7 +144,7 @@ public class Player : MonoBehaviour
         {
             AstronautBody.GetComponent<Animator>().SetTrigger("PickUp");
         }
-        if(inputManager.GetInteract())
+        if (inputManager.GetInteract())
         {
             AstronautBody.GetComponent<Animator>().SetTrigger("Interact");
         }
@@ -184,7 +223,7 @@ public class Player : MonoBehaviour
             Debug.Log("Raycast did not hit anything.");
         }
     }
-    
+
     public void OnInteractAnimationHit()
     {
         Camera cam = Camera.main;
@@ -219,6 +258,7 @@ public class Player : MonoBehaviour
             Debug.Log("Raycast did not hit anything.");
         }
     }
+    
     public void OnFootstepAnimationHit()
     {
         if(controller.isGrounded == false) return;
@@ -227,18 +267,71 @@ public class Player : MonoBehaviour
     }
     private void LateUpdate()
     {
-        // Convert quaternion to euler angles for consistent pitch reading
-        float pitch = mainCamera.transform.localEulerAngles.x;
-        // Normalize pitch to -180 to 180 range
-        if (pitch > 180f) pitch -= 360f;
-        // Convert -180 to 180 range to -1 to 1 range
-        cameraPitch = pitch / 180f;
+        //Camera controls and orientation
 
-        leftHandYaw = LeftHand.transform.localRotation.y - cameraPitch;
-        rightHandYaw = RightHand.transform.localRotation.y + cameraPitch;
-    
-        leftHandPitch = LeftHand.transform.localRotation.x - cameraPitch * 0.5f + 0.1f;
-        rightHandPitch = RightHand.transform.localRotation.x - cameraPitch * 0.5f + 0.1f;
+        Vector2 delta = InputManager.Instance.GetMouseDelta();
+        // Assumes InputManager returns raw delta (mouse delta or stick delta). Scale by sensitivity.
+        float mouseX = delta.x * mouseSensitivity;
+        float mouseY = delta.y * mouseSensitivity;
+
+        if (invertY) mouseY = -mouseY;
+
+        yaw += mouseX;
+        pitch -= mouseY; // subtract so that moving mouse up looks up
+
+        pitch = Mathf.Clamp(pitch, -maxPitch, maxPitch);
+
+        Vector3 headEuler = head.localEulerAngles;
+        
+        // Orientation
+        mainCamera.transform.localPosition = new Vector3(0, 0, 0);
+        mainCamera.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        Vector3 planetCenter = planet.transform.position;
+        Vector3 objectPosition = transform.position;
+
+        // --- 1. Surface normal at the player's position ---
+        Vector3 upDirection = (objectPosition - planetCenter).normalized;
+
+        // --- 2. Calculate tangent forward direction ---
+        Vector3 forward = Vector3.Cross(transform.right, upDirection).normalized;
+
+        // --- 4. Rotate forward vector around surface normal (yaw only) ---
+        forward = Quaternion.AngleAxis(mouseX, upDirection) * forward;
+
+        // --- 5. Recompute right to stay perpendicular ---
+        Vector3 right = Vector3.Cross(forward, upDirection).normalized;
+
+        // --- 6. Build rotation ---
+        Quaternion targetRotation = Quaternion.LookRotation(forward, upDirection);
+        transform.rotation = targetRotation;
+
+        // --- 7. Debug draw axes ---
+        float debugLength = 2f;
+        Debug.DrawRay(transform.position, upDirection * debugLength, Color.green);   // up axis
+        Debug.DrawRay(transform.position, forward * debugLength, Color.blue);        // forward axis
+        Debug.DrawRay(transform.position, right * debugLength, Color.red);           // right axis
+
+
+        Debug.Log(targetRotation);
+        Debug.Log(targetRotation.eulerAngles);
+
+        // transform.rotation = Quaternion.Euler(transform.eulerAngles.x, yaw, transform.eulerAngles.z);
+        head.localPosition = new Vector3(0, 0, 0.001f);
+        head.localRotation = Quaternion.Euler(pitch, headEuler.y, headEuler.z);
+        
+        // Convert quaternion to euler angles for consistent pitch reading
+        float headPitch = head.localEulerAngles.x;
+        // Normalize pitch to -180 to 180 range
+        if (headPitch > 180f) headPitch -= 360f;
+        // Convert -180 to 180 range to -1 to 1 range
+        this.cameraPitch = headPitch / 180f;
+
+        leftHandYaw = LeftHand.transform.localRotation.y - this.cameraPitch;
+        rightHandYaw = RightHand.transform.localRotation.y + this.cameraPitch;
+
+        leftHandPitch = LeftHand.transform.localRotation.x - this.cameraPitch * 0.5f + 0.1f;
+        rightHandPitch = RightHand.transform.localRotation.x - this.cameraPitch * 0.5f + 0.1f;
 
         LeftHand.transform.localRotation = new Quaternion(leftHandPitch, leftHandYaw, LeftHand.transform.localRotation.z, LeftHand.transform.localRotation.w);
         RightHand.transform.localRotation = new Quaternion(rightHandPitch, rightHandYaw, RightHand.transform.localRotation.z, RightHand.transform.localRotation.w);
