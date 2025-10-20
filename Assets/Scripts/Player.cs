@@ -308,7 +308,7 @@ public class Player : MonoBehaviour
         Debug.Log(targetRotation.eulerAngles);
 
         // transform.rotation = Quaternion.Euler(transform.eulerAngles.x, yaw, transform.eulerAngles.z);
-        head.localPosition = new Vector3(0, 0.76f, 0.09f);
+        head.localPosition = new Vector3(0, 0.84f, 0.09f);
         head.localRotation = Quaternion.Euler(pitch, headEuler.y, headEuler.z);
         
         // Convert quaternion to euler angles for consistent pitch reading
