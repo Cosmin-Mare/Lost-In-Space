@@ -116,7 +116,6 @@ public class Player : MonoBehaviour
         }
 
         radialVelocity += gravityValue * Time.deltaTime; // gravity toward planet center
-        Debug.Log(radialVelocity);
         
         playerVelocity = upDirection * radialVelocity;
 
@@ -303,12 +302,8 @@ public class Player : MonoBehaviour
         Debug.DrawRay(transform.position, forward * debugLength, Color.blue);        // forward axis
         Debug.DrawRay(transform.position, right * debugLength, Color.red);           // right axis
 
-
-        Debug.Log(targetRotation);
-        Debug.Log(targetRotation.eulerAngles);
-
         // transform.rotation = Quaternion.Euler(transform.eulerAngles.x, yaw, transform.eulerAngles.z);
-        head.localPosition = new Vector3(0, 0.84f, 0.09f);
+        head.localPosition = new Vector3(0, 0.78f, 0.09f);
         head.localRotation = Quaternion.Euler(pitch, headEuler.y, headEuler.z);
         
         // Convert quaternion to euler angles for consistent pitch reading

@@ -14,14 +14,12 @@ public class InventoryUI : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("InventoryUI Awake called");
         if (inventoryManager == null)
         {
             Debug.LogError("No InventoryManager assigned, attempting to find one...");
             inventoryManager = FindFirstObjectByType<InventoryManager>();
             if (inventoryManager != null)
             {
-                Debug.Log("Found InventoryManager automatically");
             }
             else
             {
@@ -33,7 +31,6 @@ public class InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("InventoryUI Start called");
         
         if (itemImages == null || itemImages.Length != 4)
         {
@@ -49,23 +46,18 @@ public class InventoryUI : MonoBehaviour
                 Debug.LogError($"Image component at slot {i} is null!");
             }
         }
-
-        Debug.Log("Subscribing to InventoryManager events...");
         // Subscribe to inventory changes
         inventoryManager.OnInventoryChanged += UpdateInventoryDisplay;
         
-        Debug.Log("Performing initial inventory display update");
         // Initial update of the display
         UpdateInventoryDisplay();
     }
 
     private void OnEnable()
     {
-        Debug.Log("InventoryUI OnEnable called");
         if (inventoryManager != null)
         {
             inventoryManager.OnInventoryChanged += UpdateInventoryDisplay;
-            Debug.Log("Resubscribed to inventory events");
         }
     }
 
@@ -80,9 +72,7 @@ public class InventoryUI : MonoBehaviour
 
     private void UpdateInventoryDisplay()
     {
-        Debug.Log("UpdateInventoryDisplay called");
         var inventory = inventoryManager.GetInventory();
-        Debug.Log($"Current inventory has {inventory.Count} items");
 
         // Clear all images first
         for (int i = 0; i < itemImages.Length; i++)
@@ -93,8 +83,6 @@ public class InventoryUI : MonoBehaviour
             {
                 itemCounts[i].text = "";
             }
-
-            Debug.Log($"Cleared slot {i}");
         }
 
         // Update images with inventory items
