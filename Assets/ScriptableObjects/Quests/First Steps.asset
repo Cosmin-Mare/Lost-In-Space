@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3967c0644a2434868af6dfd9647393f4, type: 3}
   m_Name: First Steps
   m_EditorClassIdentifier: Assembly-CSharp::LocationQuest
-  questName: 
-  description: 
+  questName: First Steps
+  description: Open the Door of the Pod and Explore the Environment
   importance: 0
-  locationCollider: {fileID: 0}

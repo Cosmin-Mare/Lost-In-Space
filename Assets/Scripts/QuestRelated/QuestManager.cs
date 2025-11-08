@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class QuestManager : MonoBehaviour
 {
@@ -12,7 +13,11 @@ public class QuestManager : MonoBehaviour
 
     private List<Quest> allQuests = new List<Quest>();
 
-    private List<LocationQuestInstance> activeLocationQuests = new List<LocationQuestInstance>(); 
+    private List<LocationQuestInstance> activeLocationQuests = new List<LocationQuestInstance>();
+
+    // Send Signal to UI to update quest display
+    public delegate void OnQuestsUpdated();
+    public event OnQuestsUpdated QuestsUpdated;
 
     private void Awake()
     {
@@ -64,9 +69,14 @@ public class QuestManager : MonoBehaviour
     {
         return allQuests.FindAll(q => q.GetStatus() == Quest.QuestStatus.Started);
     }
-    
+
     public List<Quest> GetInactiveQuests()
     {
         return allQuests.FindAll(q => q.GetStatus() == Quest.QuestStatus.Inactive);
+    }
+    
+    public void UpdateQuests()
+    {
+        QuestsUpdated?.Invoke();
     }
 }

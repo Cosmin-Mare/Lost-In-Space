@@ -12,5 +12,6 @@ public abstract class QuestInstance: MonoBehaviour
     public void CompleteQuest()
     {
         questData.CompleteQuest();
+        QuestManager.Instance.UpdateQuests();
     }
 }

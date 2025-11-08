@@ -303,9 +303,9 @@ public class Player : MonoBehaviour
         Debug.DrawRay(transform.position, right * debugLength, Color.red);           // right axis
 
         // transform.rotation = Quaternion.Euler(transform.eulerAngles.x, yaw, transform.eulerAngles.z);
-        head.localPosition = new Vector3(0, 0.78f, 0.09f);
-        head.localRotation = Quaternion.Euler(pitch, headEuler.y, headEuler.z);
-        
+        head.SetLocalPositionAndRotation(new Vector3(0, 0.78f, 0.09f), Quaternion.Euler(pitch, headEuler.y, headEuler.z));
+        AstronautBody.transform.localPosition = new Vector3(0, 0, 0);
+
         // Convert quaternion to euler angles for consistent pitch reading
         float headPitch = head.localEulerAngles.x;
         // Normalize pitch to -180 to 180 range
