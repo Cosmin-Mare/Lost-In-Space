@@ -6,17 +6,20 @@ public class EscapePod : MonoBehaviour
     private GameObject Player;
 
     [SerializeField]
-    private GameObject Light;
+    private GameObject Door;
 
     [SerializeField]
-    private GameObject Door;
+    private GameObject[] InteriorObjects;
 
     private bool isDoorOpen = false;
     void Update()
     {
         if (GetDistanceToPlayer() < 4f && isDoorOpen)
         {
-            Light.SetActive(true);
+            foreach (GameObject obj in InteriorObjects)
+            {
+                obj.SetActive(true);
+            }
         }
         else if(GetDistanceToPlayer() >= 4f && isDoorOpen)
         {
@@ -34,6 +37,9 @@ public class EscapePod : MonoBehaviour
     public void OnDoorCloseAnimationHit()
     {
         isDoorOpen = !isDoorOpen;
-        Light.SetActive(false);
+        foreach (GameObject obj in InteriorObjects)
+        {
+            obj.SetActive(false);
+        }
     }
 }

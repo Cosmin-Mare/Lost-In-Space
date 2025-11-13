@@ -21,14 +21,12 @@ public class Player : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     [SerializeField]
-    private GameObject AstronautHead;
-    [SerializeField]
     private GameObject AstronautBody;
 
     [SerializeField]
-    private GameObject LeftHand;
+    private GameObject LeftUpperArm;
     [SerializeField]
-    private GameObject RightHand;
+    private GameObject RightUpperArm;
     [SerializeField]
     private AudioSource footstepAudioSource;
     private PlanetGravity planet;
@@ -83,12 +81,10 @@ public class Player : MonoBehaviour
 
         if (move.magnitude > 0)
         {
-            AstronautHead.GetComponent<Animator>().SetBool("IsWalking", true);
             AstronautBody.GetComponent<Animator>().SetBool("IsWalking", true);
         }
         else
         {
-            AstronautHead.GetComponent<Animator>().SetBool("IsWalking", false);
             AstronautBody.GetComponent<Animator>().SetBool("IsWalking", false);
         }
 
@@ -313,13 +309,13 @@ public class Player : MonoBehaviour
         // Convert -180 to 180 range to -1 to 1 range
         this.cameraPitch = headPitch / 180f;
 
-        leftHandYaw = LeftHand.transform.localRotation.y - this.cameraPitch;
-        rightHandYaw = RightHand.transform.localRotation.y + this.cameraPitch;
+        leftHandYaw = LeftUpperArm.transform.localRotation.y - this.cameraPitch;
+        rightHandYaw = RightUpperArm.transform.localRotation.y + this.cameraPitch;
 
-        leftHandPitch = LeftHand.transform.localRotation.x - this.cameraPitch * 0.5f + 0.1f;
-        rightHandPitch = RightHand.transform.localRotation.x - this.cameraPitch * 0.5f + 0.1f;
+        leftHandPitch = LeftUpperArm.transform.localRotation.x - this.cameraPitch * 0.5f + 0.1f;
+        rightHandPitch = RightUpperArm.transform.localRotation.x - this.cameraPitch * 0.5f + 0.1f;
 
-        LeftHand.transform.localRotation = new Quaternion(leftHandPitch, leftHandYaw, LeftHand.transform.localRotation.z, LeftHand.transform.localRotation.w);
-        RightHand.transform.localRotation = new Quaternion(rightHandPitch, rightHandYaw, RightHand.transform.localRotation.z, RightHand.transform.localRotation.w);
+        LeftUpperArm.transform.localRotation = new Quaternion(leftHandPitch, leftHandYaw, LeftUpperArm.transform.localRotation.z, LeftUpperArm.transform.localRotation.w);
+        RightUpperArm.transform.localRotation = new Quaternion(rightHandPitch, rightHandYaw, RightUpperArm.transform.localRotation.z, RightUpperArm.transform.localRotation.w);
     }
 }
