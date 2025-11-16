@@ -27,7 +27,8 @@ public class MeshPainterTool : EditorTool
     public bool alignToNormal = true;
     public Vector2 randomScale = new Vector2(1f, 1f);
     public Vector2 randomRotationY = new Vector2(0f, 360f);
-    public float zOffset = 0f;
+    public Vector3 rotationOffset = Vector3.zero; // XYZ rotation offset
+
     public bool paintOnMouseDrag = true;
     public bool showDebug = true;
 
@@ -74,7 +75,6 @@ public class MeshPainterTool : EditorTool
         
         if (!(window is SceneView)) return;
         Event e = Event.current;
-        if (showDebug) Debug.Log($"[MeshPainter] Event: {e.type}, button: {e.button}, mousePos: {e.mousePosition}");
 
 
         Handles.BeginGUI();
@@ -88,7 +88,7 @@ public class MeshPainterTool : EditorTool
             brushRadius = EditorGUILayout.FloatField("Brush Radius", brushRadius);
             density = EditorGUILayout.IntSlider("Density", density, 1, 20);
             alignToNormal = EditorGUILayout.Toggle("Align to Normal", alignToNormal);
-            zOffset = EditorGUILayout.FloatField("Z Offset", zOffset);
+            rotationOffset = EditorGUILayout.Vector3Field("Z Offset", rotationOffset);
             randomScale = EditorGUILayout.Vector2Field("Random Scale", randomScale);
             randomRotationY = EditorGUILayout.Vector2Field("Random Y Rot", randomRotationY);
             paintOnMouseDrag = EditorGUILayout.Toggle("Paint On Drag", paintOnMouseDrag);
@@ -124,13 +124,14 @@ public class MeshPainterTool : EditorTool
             }
         }
 
+
         // --- Painting ---
         if (prefabToPaint != null)
         {
             bool mousePressed = e.type == EventType.MouseDown && e.button == 0;
             bool mouseDragged = paintOnMouseDrag && e.type == EventType.MouseDrag && e.button == 0;
 
-            if ((mousePressed || mouseDragged) && Time.realtimeSinceStartup - lastPaintTime > paintCooldown)
+            if (mousePressed || mouseDragged)
             {
                 if (valid)
                 {
@@ -167,6 +168,7 @@ public class MeshPainterTool : EditorTool
 
             GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefabToPaint);
             if (!instance) continue;
+            Debug.Log("CREATED INSTANCE");
 
             Undo.RegisterCreatedObjectUndo(instance, "Paint Mesh");
             instance.transform.position = hit.point;
@@ -174,10 +176,14 @@ public class MeshPainterTool : EditorTool
             if (alignToNormal)
             {
                 instance.transform.up = hit.normal;
-                instance.transform.Rotate(instance.transform.forward, zOffset, Space.World);
             }
 
-            instance.transform.Rotate(Vector3.up, Random.Range(randomRotationY.x, randomRotationY.y), Space.Self);
+            // Apply user rotation offset (XYZ)
+            instance.transform.Rotate(rotationOffset, Space.Self);
+
+            // Apply random Y rotation (same as before)
+            instance.transform.Rotate(Vector3.forward, Random.Range(randomRotationY.x, randomRotationY.y), Space.Self);
+
             float s = Random.Range(randomScale.x, randomScale.y);
             instance.transform.localScale = Vector3.one * s;
 

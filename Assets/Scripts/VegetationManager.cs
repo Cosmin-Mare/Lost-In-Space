@@ -19,6 +19,7 @@ public class VegetationManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject player;
 
+
     [Header("Vegetation Types")]
     [SerializeField] private List<VegetationType> vegetationTypes = new List<VegetationType>();
 
@@ -46,12 +47,12 @@ public class VegetationManager : MonoBehaviour
 
             foreach (Transform spawn in spawnPoints)
             {
-                if (spawn == type.spawnPointsParent) continue;
+                if (spawn == type.spawnPointsParent) continue;  
+                Debug.Log($"[{type.name}] Processing spawn point: {spawn.position}");
 
-                // Random rotation around up axis (Y)
                 Quaternion randomRotation = Quaternion.Euler(
                     spawn.rotation.eulerAngles.x,                  // keep original X
-                    Random.Range(0f, 360f),                        // random Y rotation
+                    spawn.rotation.eulerAngles.y,                        
                     spawn.rotation.eulerAngles.z                   // keep original Z
                 );
 
@@ -101,6 +102,7 @@ public class VegetationManager : MonoBehaviour
                     type.material,
                     matricesToDraw.GetRange(i, length)
                 );
+                Debug.Log($"[{type.name}] Drew batch {matricesToDraw.GetRange(i, length)}.");
             }
 
             Debug.Log($"[{type.name}] Rendering {matricesToDraw.Count} instances this frame.");
