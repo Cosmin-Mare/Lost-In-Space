@@ -28,15 +28,31 @@ public class Collectible : MonoBehaviour
         }
     }
 
-
-    private void Update()
+    /// <summary>
+    /// Resolve a mineable resource from a raycast hit. Ores may carry Collectible
+    /// on the hit object, a parent wrapper, or a child mesh collider.
+    /// </summary>
+    public static Collectible FindFromHit(Transform hit)
     {
-        // Update behavior if needed in the future
+        if (hit == null)
+        {
+            return null;
+        }
+
+        Collectible collectible = hit.GetComponent<Collectible>();
+        if (collectible == null)
+        {
+            collectible = hit.GetComponentInParent<Collectible>();
+        }
+
+        if (collectible == null)
+        {
+            collectible = hit.GetComponentInChildren<Collectible>();
+        }
+
+        return collectible;
     }
 
-
-
-    // Called when the prefab is mined by raycast
     public void MineResource()
     {
         if (isCollected || resourceData == null) return;
@@ -68,21 +84,20 @@ public class Collectible : MonoBehaviour
     private void Collect()
     {
         isCollected = true;
-        
-        // Spawn the collected item prefab
+        GameObject visual = prefabInstance != null ? prefabInstance : gameObject;
+
         if (resourceData != null && resourceData.item != null && resourceData.item.prefab != null)
         {
-            // Get the world position of the resource prefab
-            Vector3 worldPosition = prefabInstance.transform.position;
+            Vector3 worldPosition = visual.transform.position;
             Vector3 itemPosition = new Vector3(worldPosition.x, worldPosition.y + 0.5f, worldPosition.z);
             Quaternion randomRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-            
-            // Spawn the item prefab at the root level, using the resource prefab's world position
-            GameObject collectedItem = Instantiate(resourceData.item.prefab, itemPosition, randomRotation);
-            
-            // Set the resource prefab inactive
-            prefabInstance.SetActive(false);
-        }
 
+            Instantiate(resourceData.item.prefab, itemPosition, randomRotation);
+            visual.SetActive(false);
+        }
+        else
+        {
+            visual.SetActive(false);
+        }
     }
 }
