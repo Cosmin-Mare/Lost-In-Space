@@ -59,6 +59,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34228fe433d9e440588e144a9c2af729, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1012490411864583094}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 34228fe433d9e440588e144a9c2af729, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5128471938472011847}
   m_SourcePrefab: {fileID: 100100000, guid: 34228fe433d9e440588e144a9c2af729, type: 3}
 --- !u!1 &2169972930427563638 stripped
 GameObject:
@@ -86,3 +89,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.2453537, y: 3.0166068, z: 2.4260743}
   m_Center: {x: 0.054458678, y: -0.1705272, z: 0.11088435}
+--- !u!114 &5128471938472011847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2169972930427563638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc849eb7930bd40b6a08751523d8fb6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Collectible
+  resourceData: {fileID: 11400000, guid: d4f4810f36bbe494db161a5be8cf1f96, type: 2}
+  hitEffect: {fileID: 0}
+  prefabInstance: {fileID: 2169972930427563638}
+  hitAudioSource: {fileID: 0}
